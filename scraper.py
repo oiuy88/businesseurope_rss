@@ -71,6 +71,8 @@ def parse_date(date_text):
         "%d.%m.%Y",
         "%d/%m/%Y",
         "%d-%m-%Y",
+        "%d %B %Y",  # <-- NEW: Catches "19 March 2026"
+        "%d %b %Y",  # <-- NEW: Catches "19 Mar 2026"
     ]
 
     for date_format in formats:
@@ -217,38 +219,22 @@ def get_publication_details(
         if heading_text:
             title = heading_text
 
-    # --------------------------------------------------------
+# --------------------------------------------------------
     # Find publication date
     # --------------------------------------------------------
-
     date = None
 
-    # Search visible text for common BusinessEurope
-    # date format: DD.MM.YYYY
-    text = soup.get_text(
-        " ",
-        strip=True
-    )
-
+    # Search visible text for common BusinessEurope date formats
+    text = soup.get_text(" ", strip=True)
     import re
 
-    date_match = re.search(
-        r"\b(\d{2}\.\d{2}\.\d{4})\b",
-        text
-    )
+    # This regex catches DD.MM.YYYY -OR- DD Month YYYY
+    date_pattern = r"\b(\d{2}\.\d{2}\.\d{4}|\d{1,2}\s+[A-Za-z]+\s+\d{4})\b"
+    
+    date_match = re.search(date_pattern, text)
 
     if date_match:
-
-        date = parse_date(
-            date_match.group(1)
-        )
-
-    return {
-        "title": title,
-        "url": publication["url"],
-        "date": date,
-    }
-
+        date = parse_date(date_match.group(1))
 
 # ============================================================
 # CREATE RSS

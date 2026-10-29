@@ -236,6 +236,12 @@ def get_publication_details(
     if date_match:
         date = parse_date(date_match.group(1))
 
+    return {
+        "title": title,
+        "url": publication["url"]
+        "date": date,
+    }
+
 # ============================================================
 # CREATE RSS
 # ============================================================

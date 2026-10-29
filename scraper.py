@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 from datetime import datetime, timezone
 from email.utils import format_datetime
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -130,10 +130,10 @@ def extract_publications(html_content):
         ):
             continue
 
-        # Don't treat the main archive itself as an item.
-        if url.rstrip("/") == (
-            PUBLICATIONS_URL.rstrip("/")
-        ):
+        # --- FIX: Don't treat the main archive or pagination pages as items ---
+        # urlparse separates the core path from query parameters like ?sf_paged=2
+        parsed_url = urlparse(url)
+        if parsed_url.path.rstrip("/") == "/publications":
             continue
 
         title = link.get_text(

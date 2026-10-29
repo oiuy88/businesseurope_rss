@@ -238,7 +238,7 @@ def get_publication_details(
 
     return {
         "title": title,
-        "url": publication["url"]
+        "url": publication["url"],
         "date": date,
     }
 
